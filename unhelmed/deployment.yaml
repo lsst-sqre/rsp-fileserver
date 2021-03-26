@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fileserver
+  labels:
+    name: fileserver
+  namespace: fileserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: fileserver
+  template:
+    metadata:
+      labels:
+        name: fileserver
+    spec:
+      containers:
+        - name: fileserver
+          image: erichough/nfs-server
+          env:
+            - name: NFS_EXPORT_0
+              value: '/share1'
+          volumeMounts:
+            - name: exports
+              mountPath: /share1
+          securityContext:
+            capabilities:
+              add:
+              - CAP_SYS_ADMIN
+      volumes:
+      - name: exports
+        persistentVolumeClaim:
+          claimName: exports
+        
